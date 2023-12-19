@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using User.Application.Interfaces;
 using User.Application.Services;
 using User.Infrastructure.Persistence.Repositories;
@@ -12,6 +13,9 @@ namespace User.Function
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             //Services
             builder.Services.AddScoped<IUserApplication, UserApplication>();
 
