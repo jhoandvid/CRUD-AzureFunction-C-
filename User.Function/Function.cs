@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -6,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,11 +26,16 @@ namespace User.Function
     {
         private readonly ILogger<Function> _logger;
         private readonly IUserApplication _userApplication;
+        private readonly IValidator<UserCreateDto> _createValidator;
+        private readonly IValidator<UserUpdateDto> _updateValidator;
 
-        public Function(ILogger<Function> log, IUserApplication userApplication)
+        public Function(ILogger<Function> log, IUserApplication userApplication, IValidator<UserCreateDto> createValidator,  IValidator<UserUpdateDto> updateValidator)
         {
             _logger = log;
             _userApplication = userApplication;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+            
         }
 
         [FunctionName("GetAllUser")]
@@ -44,13 +51,28 @@ namespace User.Function
 
         [FunctionName("CreateUser")]
         [OpenApiOperation(operationId: "CreateUser", tags: new[] { "Users" })]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserDtoResponse), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ResponseApi), Description = "The OK response")]
         [OpenApiRequestBody("application/json", typeof(UserCreateDto))]
         public ActionResult<UserDtoResponse> CreateUser(
           [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/CreateUser")] UserCreateDto userCreateDto)
         {
+            var validation = _createValidator.Validate(userCreateDto);
 
-            return new ObjectResult(_userApplication.CreateUser(userCreateDto));
+            if (!validation.IsValid)
+            {
+                return new BadRequestObjectResult(new ResponseApi()
+                {
+                    IsSuccess = false,
+                    Messague = "Error a la hora de validar data",
+                    Result = validation.Errors.Select(e => new
+                    {
+                        Field = e.PropertyName,
+                        Error= e.ErrorMessage
+                    })
+                }) ;
+            }
+
+            return new ObjectResult(new ResponseApi() {Result= _userApplication.CreateUser(userCreateDto), IsSuccess=true, Messague="Usuario creado exitosamente" });
 
         }
 

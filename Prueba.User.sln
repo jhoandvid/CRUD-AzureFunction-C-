@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.Domain", "Users.Domai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Application", "User.Application\User.Application.csproj", "{55F737ED-DEA9-4A88-92C5-F8FAFFC9F290}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Infrastructure.Persistence", "User.Infrastructure.Persistence\User.Infrastructure.Persistence.csproj", "{DDE2508E-D6D6-4C06-9ACB-A2D76276F35A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Infrastructure.Persistence", "User.Infrastructure.Persistence\User.Infrastructure.Persistence.csproj", "{DDE2508E-D6D6-4C06-9ACB-A2D76276F35A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
