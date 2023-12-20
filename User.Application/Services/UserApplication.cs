@@ -20,10 +20,10 @@ namespace User.Application.Services
             _userRepository = userRepository;
         }
 
-        public UserDtoResponse CreateUser(UserCreateDto userCreateDto)
+        public async Task<UserDtoResponse> CreateUser(UserCreateDto userCreateDto)
         {
             var userModel=_mapper.Map<UserModel>(userCreateDto);
-            var user=_userRepository.CreateUser(userModel);
+            var user=await _userRepository.CreateUser(userModel);
             return _mapper.Map<UserDtoResponse>(user);
         }
 

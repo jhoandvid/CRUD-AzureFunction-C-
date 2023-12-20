@@ -53,7 +53,7 @@ namespace User.Function
         [OpenApiOperation(operationId: "CreateUser", tags: new[] { "Users" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ResponseApi), Description = "The OK response")]
         [OpenApiRequestBody("application/json", typeof(UserCreateDto))]
-        public ActionResult<UserDtoResponse> CreateUser(
+        public async Task<ActionResult<UserDtoResponse>> CreateUser(
           [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/CreateUser")] UserCreateDto userCreateDto)
         {
             var validation = _createValidator.Validate(userCreateDto);
@@ -72,7 +72,7 @@ namespace User.Function
                 }) ;
             }
 
-            return new ObjectResult(new ResponseApi() {Result= _userApplication.CreateUser(userCreateDto), IsSuccess=true, Messague="Usuario creado exitosamente" });
+            return new ObjectResult(new ResponseApi() {Result= await _userApplication.CreateUser(userCreateDto), IsSuccess=true, Messague="Usuario creado exitosamente" });
 
         }
 

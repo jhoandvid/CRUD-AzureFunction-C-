@@ -12,15 +12,20 @@ namespace User.Infrastructure.Persistence.Repositories
     public class UserRepository : IUserRepository
     {
         private List<UserModel> users;
+        private readonly UserContext _context;
 
-        public UserRepository() { 
-           users = new List<UserModel>();
+        public UserRepository(UserContext context)
+        {
+            _context = context;
+            users = new List<UserModel>();
         }
 
-        public UserModel CreateUser(UserModel userModel)
+       
+
+        public async Task<UserModel> CreateUser(UserModel userModel)
         {
-            userModel.Id = users.Count() + 1;
-            users.Add(userModel);
+            _context.Add(userModel);
+            await _context.SaveChangesAsync();
             return userModel;
         }
 

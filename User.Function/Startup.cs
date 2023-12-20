@@ -8,6 +8,8 @@ using Users.Domain.validators;
 using User.Infrastructure.Persistence.Repositories;
 using Users.Domain.Interfaces;
 using Users.Domain.Dto;
+using User.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 [assembly: FunctionsStartup(typeof(User.Function.Startup))]
 namespace User.Function
@@ -19,11 +21,14 @@ namespace User.Function
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            var stringConnection = Environment.GetEnvironmentVariable("ConnectionStrings");
+            builder.Services.AddDbContext<UserContext>(x=>x.UseSqlServer(stringConnection));
+
             //Services
             builder.Services.AddScoped<IUserApplication, UserApplication>();
 
             //Repository
-            builder.Services.AddSingleton<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 
             //Validations
