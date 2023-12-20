@@ -27,15 +27,15 @@ namespace User.Application.Services
             return _mapper.Map<UserDtoResponse>(user);
         }
 
-        public List<UserDtoResponse> GetAllUser()
+        public async Task<List<UserDtoResponse>> GetAllUser()
         {
-            var response = _userRepository.GetAllUser();
+            var response = await _userRepository.GetAllUser();
             return _mapper.Map<List<UserDtoResponse>>(response);
         }
 
-        public UserDtoResponse? GetUserById(int id)
+        public async Task<UserDtoResponse?> GetUserById(int id)
         {
-            var user= _userRepository.GetUserById(id);
+            var user= await _userRepository.GetUserById(id);
             if (user == null)
             {
                 return null;
@@ -43,15 +43,25 @@ namespace User.Application.Services
             return _mapper.Map<UserDtoResponse>(user); 
         }
 
-        public UserDtoResponse? UpdateUser(int id, UserUpdateDto userUpdateModel)
+        public async Task<UserDtoResponse?> UpdateUser(int id, UserUpdateDto userUpdateModel)
         {
-            var userModel = _mapper.Map<UserModel>(userUpdateModel);
-
-            var userUpdate= _userRepository.UpdateUser(id, userModel);
-            if(userUpdate == null)
+         
+            var user = await _userRepository.GetUserById(id);
+            
+            if(user == null)
             {
                 return null;
             }
+
+            user = _mapper.Map(userUpdateModel, user);
+
+            var userModel = _mapper.Map<UserModel>(user);
+            
+            if(userModel == null)
+            {
+                return null;
+            }
+            var userUpdate = await _userRepository.UpdateUser(userModel);
             return _mapper.Map<UserDtoResponse>(userUpdate);
         }
     }

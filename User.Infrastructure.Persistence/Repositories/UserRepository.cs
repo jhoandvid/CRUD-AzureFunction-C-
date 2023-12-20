@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,13 +12,11 @@ namespace User.Infrastructure.Persistence.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private List<UserModel> users;
         private readonly UserContext _context;
 
         public UserRepository(UserContext context)
         {
             _context = context;
-            users = new List<UserModel>();
         }
 
        
@@ -29,37 +28,23 @@ namespace User.Infrastructure.Persistence.Repositories
             return userModel;
         }
 
-        public List<UserModel> GetAllUser()
+        public async Task<List<UserModel>> GetAllUser()
         {
-            return users;
+            return await _context.Users.ToListAsync();
         }
 
-        public UserModel? GetUserById(int id)
+        public async Task<UserModel?> GetUserById(int id)
         {
-            var user= users.FirstOrDefault(x=>x.Id== id);
-            if (user == null)
-            {
-                return null;
-            }
-            return user;
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public UserModel? UpdateUser(int id, UserModel userModel)
+        public async Task<UserModel?> UpdateUser(UserModel userModel)
         {
-            var user= this.GetUserById(id);
-
-            if(user == null)
-            {
-                return null;
-            }
-            user.Document = userModel.Document;
-            user.LastName = userModel.LastName;
-            user.BirthDay= userModel.BirthDay;
-            user.Name = userModel.Name;
-
-            return user;
+            _context.Update(userModel);
+            await _context.SaveChangesAsync();
+            return userModel;
         }
 
-      
+       
     }
 }

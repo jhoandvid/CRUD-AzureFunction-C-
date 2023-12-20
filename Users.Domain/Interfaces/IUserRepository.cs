@@ -11,8 +11,8 @@ namespace Users.Domain.Interfaces
     public interface IUserRepository
     {
         Task<UserModel> CreateUser(UserModel userModel);
-        List<UserModel> GetAllUser();
-        UserModel? GetUserById(int id);
-        UserModel? UpdateUser(int id, UserModel userModel);
+        Task<List<UserModel>> GetAllUser();
+        Task<UserModel?> GetUserById(int id);
+        Task<UserModel?> UpdateUser(UserModel userModel);
     }
 }

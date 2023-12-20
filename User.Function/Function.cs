@@ -41,11 +41,11 @@ namespace User.Function
         [FunctionName("GetAllUser")]
         [OpenApiOperation(operationId: "GetAllUser", tags: new[] { "Users" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(List<UserDtoResponse>), Description = "The OK response")]
-        public  ActionResult<List<UserDtoResponse>> GetAllUser(
+        public async Task<ActionResult<List<UserDtoResponse>>> GetAllUser(
            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/GetAllUser")] HttpRequest req)
         {
 
-            return new ObjectResult(_userApplication.GetAllUser());
+            return new ObjectResult(await _userApplication.GetAllUser());
 
         }
 
@@ -80,10 +80,10 @@ namespace User.Function
         [OpenApiOperation(operationId: "GetUserById", tags: new[] { "Users" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(UserDtoResponse), Description = "The OK response")]
         [OpenApiParameter(name:"id")]
-        public ActionResult<List<UserDtoResponse>> GetUserById(
+        public async Task<ActionResult<UserDtoResponse>> GetUserById(
          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/GetUserById/{id:int}")] HttpRequest req, int id)
         {
-            var user= _userApplication.GetUserById(id);
+            var user= await _userApplication.GetUserById(id);
 
             if (user == null)
             {
@@ -98,12 +98,12 @@ namespace User.Function
         [OpenApiResponseWithBody(statusCode:HttpStatusCode.OK, contentType:"application/json", bodyType:typeof(UserDtoResponse), Description ="The Ok Response")]
         [OpenApiRequestBody("application/json", typeof(UserUpdateDto))]
         [OpenApiParameter(name: "id")]
-        public ActionResult<UserDtoResponse> UpdateUser([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route ="api/UpdateUser/{id:int}")] UserUpdateDto userUpdateDto, int id)
+        public async Task<ActionResult<UserDtoResponse>> UpdateUser([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route ="api/UpdateUser/{id:int}")] UserUpdateDto userUpdateDto, int id)
         {
-           var userUpdate= _userApplication.UpdateUser(id, userUpdateDto);
+           var userUpdate= await _userApplication.UpdateUser(id, userUpdateDto);
            if(userUpdate == null)
             {
-                return new NotFoundResult();
+                return new NotFoundObjectResult(new ResponseApi() { IsSuccess=false, Messague="No se encontro el registro", Result=null});
             }
 
            return userUpdate;
